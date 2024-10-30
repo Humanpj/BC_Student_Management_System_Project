@@ -208,6 +208,19 @@ namespace BC_Student_Management_System_Project
             // Close the form (or perform your desired logout action)
             this.Close();
         }
+
+        private void frmStudentManagementSystem_Load(object sender, EventArgs e)
+        {
+            // Show the LoginForm as a modal dialog
+            LoginForm loginForm = new LoginForm();
+
+            // If login fails (DialogResult not OK), close the main form
+            if (loginForm.ShowDialog() != DialogResult.OK)
+            {
+                // Close the main form if login is not successful
+                this.Close();
+            }
+        }
     }
 }
     
