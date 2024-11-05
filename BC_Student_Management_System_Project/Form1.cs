@@ -13,24 +13,25 @@ namespace BC_Student_Management_System_Project
 {
     public partial class frmStudentManagementSystem : Form
     {
-        private string filePath = "students.txt";  // Path for storing student data
         private BindingSource studentBindingSource = new BindingSource(); // Binding source for DataGridView
         private List<Student> students = new List<Student>();  // List to hold student records
+        private Transactions transactions;
+        private FileHandler studentFile;
+        private FileHandler summaryFile;
 
         public frmStudentManagementSystem()
         {
             InitializeComponent();
-            CheckOrCreateFile(); // Ensure the file exists at startup
+            
          //   LoadAllStudents();    //load all students from file at startup
-        }
-//====================================================================================================================================
-        // Ensure the students.txt file exists, create if not
-        private void CheckOrCreateFile()
-        {
-            if (!File.Exists(filePath))
-            {
-                File.Create(filePath).Close();
-            }
+
+            transactions = new Transactions();
+            studentFile = new FileHandler("students.txt");
+            studentBindingSource = new BindingSource();
+            //LoadAllStudents();
+
+            studentFile.CheckOrCreateFile(); // Ensure the file exists at startup
+            students = Transactions.LinesToStudents(studentFile.ReadAllLines());
         }
 //====================================================================================================================================
         //add a new student to the list and saves to textfile with name students.txt
@@ -52,14 +53,20 @@ namespace BC_Student_Management_System_Project
             int age = int.Parse(ageText);
 
             // Create a new student object and add to the list
-            Student newStudent = new Student { StudentID = studentId, Name = name, Age = age, Course = course };
+            Student newStudent = new Student(studentId, name, age, course);
             students.Add(newStudent);
 
             // Append new student data to students.txt file
-            using (StreamWriter writer = new StreamWriter(filePath, true))
+            studentFile.Write(newStudent.ToString());
+            /*using (StreamWriter writer = new StreamWriter(filePath, true))
             {
                 writer.WriteLine($"{studentId},{name},{age},{course}");
-            }
+            }*/
+
+            newStudent = new Student (name, course, age, studentId);
+            students.Add(newStudent);
+            //Transactions.AddStudent(newStudent);
+            studentFile.Write(newStudent.ToString());
 
             MessageBox.Show("Student added successfully!");
             ClearFields(); // Reset input fields after adding a student
@@ -67,13 +74,18 @@ namespace BC_Student_Management_System_Project
         }
 //====================================================================================================================================
         // Loads all students from students.txt and displays in DataGridView
+
+        //Ken -> implement
         private void btnViewAllStudents_Click(object sender, EventArgs e)
         {
-              LoadAllStudents();
+            studentFile.ReadAllLines();
+            //LoadAllStudents();
         }
 //====================================================================================================================================
+        //REPLACED WITH Transactions.LinesToStudents(FileHandler.ReadAllLines);
+        
         // Reads all student records from students.txt and populates the student list
-        private void LoadAllStudents()
+        /*private void LoadAllStudents()
         {
             students.Clear(); // Clear the current list before loading
 
@@ -103,7 +115,7 @@ namespace BC_Student_Management_System_Project
             // Bind the list to DataGridView for display
             studentBindingSource.DataSource = students;
             dgvStudents.DataSource = studentBindingSource;
-        }
+        }*/
 //====================================================================================================================================
         private void btnUpdateStudent_Click(object sender, EventArgs e)
         {
@@ -119,19 +131,22 @@ namespace BC_Student_Management_System_Project
         //====================================================================================================================================
         private void btnGenerateSummary_Click(object sender, EventArgs e)
         {
+            int totalStudents, totalAge = 0;
+            double avgAge = 0;
 
-        }
-        //====================================================================================================================================
-        // Saves all student records from the list to students.txt, overwriting existing file content
-        private void SaveAllStudentsToFile()
-        {
-            using (StreamWriter writer = new StreamWriter(filePath))
+            students = Transactions.LinesToStudents(studentFile.ReadAllLines());
+
+            totalStudents = students.Count;
+
+            foreach (Student student in students)
             {
-                foreach (var student in students)
-                {
-                    writer.WriteLine($"{student.StudentID},{student.Name},{student.Age},{student.Course}");
-                }
+                totalAge += student.Age;
             }
+
+            avgAge = totalAge / totalStudents;
+
+            lblTotalStudents.Text = "Total Students: " + totalStudents.ToString();
+            lblAverageAge.Text = "Average Age: "+avgAge.ToString();
         }
 //====================================================================================================================================
         // Clears input fields on the form for easier data entry
@@ -163,7 +178,7 @@ namespace BC_Student_Management_System_Project
                 return false;
             }
             // Check for duplicate StudentID in the text file
-            if (IsDuplicateStudentID(txtStudentID.Text))
+            if (studentFile.SearchID(txtStudentID.Text))
             {
                 MessageBox.Show("Student ID already exists. Please enter a unique ID.");
                 return false;
@@ -172,32 +187,11 @@ namespace BC_Student_Management_System_Project
             return true; // Return true if all validations pass
         }
         //====================================================================================================================================
-        private bool IsDuplicateStudentID(string studentId)
-        {
-            // Ensure file exists before reading
-            if (File.Exists(filePath))
-            {
-                using (StreamReader reader = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        var data = line.Split(',');
-                        // Check if the first element (StudentID) matches the input
-                        if (data.Length > 0 && data[0] == studentId)
-                        {
-                            return true; // Duplicate found
-                        }
-                    }
-                }
-            }
-            return false; // No duplicate found
-        }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
             // Optional: Save all current student records to the file before logout
-            SaveAllStudentsToFile();
+            studentFile.ReWrite(students);
 
             // Clear the in-memory list of students (if needed)
             students.Clear();
