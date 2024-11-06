@@ -36,19 +36,25 @@
             // 
             // txtUsername
             // 
+            this.txtUsername.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtUsername.Location = new System.Drawing.Point(241, 31);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(100, 20);
             this.txtUsername.TabIndex = 0;
             this.txtUsername.Text = "Username";
+            this.txtUsername.Enter += new System.EventHandler(this.txtUsername_Enter);
+            this.txtUsername.Leave += new System.EventHandler(this.txtUsername_Leave);
             // 
             // txtPassword
             // 
+            this.txtPassword.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtPassword.Location = new System.Drawing.Point(241, 72);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(100, 20);
             this.txtPassword.TabIndex = 1;
             this.txtPassword.Text = "Password";
+            this.txtPassword.Enter += new System.EventHandler(this.txtPassword_Enter);
+            this.txtPassword.Leave += new System.EventHandler(this.txtPassword_Leave);
             // 
             // btnLogin
             // 

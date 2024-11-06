@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BC_Student_Management_System_Project
 {
@@ -22,8 +23,8 @@ namespace BC_Student_Management_System_Project
         public frmStudentManagementSystem()
         {
             InitializeComponent();
-            
-         //   LoadAllStudents();    //load all students from file at startup
+
+            //   LoadAllStudents();    //load all students from file at startup
 
             transactions = new Transactions();
             studentFile = new FileHandler("students.txt");
@@ -33,7 +34,7 @@ namespace BC_Student_Management_System_Project
             studentFile.CheckOrCreateFile(); // Ensure the file exists at startup
             students = Transactions.LinesToStudents(studentFile.ReadAllLines());
         }
-//====================================================================================================================================
+        //====================================================================================================================================
         //add a new student to the list and saves to textfile with name students.txt
         private void btnAddStudent_Click(object sender, EventArgs e)
         {
@@ -63,27 +64,26 @@ namespace BC_Student_Management_System_Project
                 writer.WriteLine($"{studentId},{name},{age},{course}");
             }*/
 
-            newStudent = new Student (name, course, age, studentId);
-            students.Add(newStudent);
             //Transactions.AddStudent(newStudent);
-            studentFile.Write(newStudent.ToString());
-
             MessageBox.Show("Student added successfully!");
             ClearFields(); // Reset input fields after adding a student
             studentBindingSource.ResetBindings(false); // Refresh the BindingSource to update DataGridView
         }
-//====================================================================================================================================
+        //====================================================================================================================================
         // Loads all students from students.txt and displays in DataGridView
 
         //Ken -> implement
         private void btnViewAllStudents_Click(object sender, EventArgs e)
         {
-            studentFile.ReadAllLines();
+            students = Transactions.LinesToStudents(studentFile.ReadAllLines());
+
+            dgvStudents.DataSource = students;
+
             //LoadAllStudents();
         }
-//====================================================================================================================================
+        //====================================================================================================================================
         //REPLACED WITH Transactions.LinesToStudents(FileHandler.ReadAllLines);
-        
+
         // Reads all student records from students.txt and populates the student list
         /*private void LoadAllStudents()
         {
@@ -116,16 +116,45 @@ namespace BC_Student_Management_System_Project
             studentBindingSource.DataSource = students;
             dgvStudents.DataSource = studentBindingSource;
         }*/
-//====================================================================================================================================
+        //====================================================================================================================================
         private void btnUpdateStudent_Click(object sender, EventArgs e)
         {
-        
+            int rowIndex = dgvStudents.CurrentCell.RowIndex;
 
+            if (!string.IsNullOrWhiteSpace(txtStudentID.Text))
+            {
+                students[rowIndex].StudentID = txtStudentID.Text;
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtName.Text))
+            {
+                students[rowIndex].Name = txtName.Text;
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtAge.Text) && int.TryParse(txtAge.Text, out int age))
+            {
+                students[rowIndex].Age = age;
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtCourse.Text))
+            {
+                students[rowIndex].Course = txtCourse.Text;
+            }
+
+            studentFile.ReWrite(students);
+
+            btnViewAllStudents_Click(sender, e);
         }
-//====================================================================================================================================
+        //====================================================================================================================================
         private void btnDeleteStudent_Click(object sender, EventArgs e)
         {
-           
+            int rowIndex = dgvStudents.CurrentCell.RowIndex;
+
+            students.Remove(students[rowIndex]);
+
+            studentFile.ReWrite(students);
+
+            btnViewAllStudents_Click(sender, e);
         }
         //====================================================================================================================================
         //====================================================================================================================================
@@ -146,9 +175,9 @@ namespace BC_Student_Management_System_Project
             avgAge = totalAge / totalStudents;
 
             lblTotalStudents.Text = "Total Students: " + totalStudents.ToString();
-            lblAverageAge.Text = "Average Age: "+avgAge.ToString();
+            lblAverageAge.Text = "Average Age: " + avgAge.ToString();
         }
-//====================================================================================================================================
+        //====================================================================================================================================
         // Clears input fields on the form for easier data entry
         private void ClearFields()
         {
@@ -157,7 +186,7 @@ namespace BC_Student_Management_System_Project
             txtAge.Clear();
             txtCourse.Clear();
         }
-//====================================================================================================================================
+        //====================================================================================================================================
         // Method to validate that all required fields are filled
         private bool IsInputValid()
         {
@@ -165,7 +194,11 @@ namespace BC_Student_Management_System_Project
             if (string.IsNullOrWhiteSpace(txtStudentID.Text) ||
                 string.IsNullOrWhiteSpace(txtName.Text) ||
                 string.IsNullOrWhiteSpace(txtAge.Text) ||
-                string.IsNullOrWhiteSpace(txtCourse.Text))
+                string.IsNullOrWhiteSpace(txtCourse.Text) ||
+                txtStudentID.Text == "StudentId" ||
+                txtName.Text == "Name" ||
+                txtAge.Text == "Age" ||
+                txtCourse.Text == "Course")
             {
                 MessageBox.Show("All fields are required.");
                 return false; // Return false if any field is empty
@@ -214,6 +247,66 @@ namespace BC_Student_Management_System_Project
                 // Close the main form if login is not successful
                 this.Close();
             }
+        }
+
+        public void txtEnter(string text, System.Windows.Forms.TextBox textBox)
+        {
+            if (textBox.Text == text)
+            {
+                textBox.Text = "";
+
+                textBox.ForeColor = Color.Black;
+            }
+        }
+
+        public void txtLeave(string text, System.Windows.Forms.TextBox textBox)
+        {
+            if (textBox.Text == "")
+            {
+                textBox.Text = text;
+
+                textBox.ForeColor = Color.Gray;
+            }
+        }
+
+        private void txtStudentID_Enter(object sender, EventArgs e)
+        {
+            txtEnter("StudentId", txtStudentID);
+        }
+
+        private void txtStudentID_Leave(object sender, EventArgs e)
+        {
+            txtLeave("StudentId", txtStudentID);
+        }
+
+        private void txtName_Enter(object sender, EventArgs e)
+        {
+            txtEnter("Name", txtName);
+        }
+
+        private void txtName_Leave(object sender, EventArgs e)
+        {
+            txtLeave("Name", txtName);
+        }
+
+        private void txtAge_Enter(object sender, EventArgs e)
+        {
+            txtEnter("Age", txtAge);
+        }
+
+        private void txtAge_Leave(object sender, EventArgs e)
+        {
+            txtLeave("Age", txtAge);
+        }
+
+        private void txtCourse_Enter(object sender, EventArgs e)
+        {
+            txtEnter("Course", txtCourse);
+        }
+
+        private void txtCourse_Leave(object sender, EventArgs e)
+        {
+            txtLeave("Course", txtCourse);
         }
     }
 }

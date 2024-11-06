@@ -37,8 +37,6 @@ namespace BC_Student_Management_System_Project
                 {
                     sw.WriteLine(student.ToString());
                 }
-
-                File.Create(Path).Close();
             }
 
             fs.Close();

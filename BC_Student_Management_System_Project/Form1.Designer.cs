@@ -121,35 +121,47 @@
             // 
             // txtStudentID
             // 
+            this.txtStudentID.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtStudentID.Location = new System.Drawing.Point(484, 148);
             this.txtStudentID.Name = "txtStudentID";
             this.txtStudentID.Size = new System.Drawing.Size(100, 20);
             this.txtStudentID.TabIndex = 7;
             this.txtStudentID.Text = "StudentId";
+            this.txtStudentID.Enter += new System.EventHandler(this.txtStudentID_Enter);
+            this.txtStudentID.Leave += new System.EventHandler(this.txtStudentID_Leave);
             // 
             // txtName
             // 
+            this.txtName.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtName.Location = new System.Drawing.Point(484, 174);
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(100, 20);
             this.txtName.TabIndex = 8;
             this.txtName.Text = "Name";
+            this.txtName.Enter += new System.EventHandler(this.txtName_Enter);
+            this.txtName.Leave += new System.EventHandler(this.txtName_Leave);
             // 
             // txtAge
             // 
+            this.txtAge.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtAge.Location = new System.Drawing.Point(484, 200);
             this.txtAge.Name = "txtAge";
             this.txtAge.Size = new System.Drawing.Size(100, 20);
             this.txtAge.TabIndex = 9;
             this.txtAge.Text = "Age";
+            this.txtAge.Enter += new System.EventHandler(this.txtAge_Enter);
+            this.txtAge.Leave += new System.EventHandler(this.txtAge_Leave);
             // 
             // txtCourse
             // 
+            this.txtCourse.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtCourse.Location = new System.Drawing.Point(484, 226);
             this.txtCourse.Name = "txtCourse";
             this.txtCourse.Size = new System.Drawing.Size(100, 20);
             this.txtCourse.TabIndex = 10;
             this.txtCourse.Text = "Course";
+            this.txtCourse.Enter += new System.EventHandler(this.txtCourse_Enter);
+            this.txtCourse.Leave += new System.EventHandler(this.txtCourse_Leave);
             // 
             // lblTotalStudents
             // 

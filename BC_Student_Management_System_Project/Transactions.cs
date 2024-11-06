@@ -24,12 +24,12 @@ namespace BC_Student_Management_System_Project
         //Ken -> implement
         public static bool UpdateStudent(string studentId, string name, int age, string course)
         {
-            var student = students.FirstOrDefault(s => s.StudentID == studentId);
+            /*var student = students.FirstOrDefault(s => s.StudentID == studentId);
             if (student == null) return false;
 
             student.Name = name;
             student.Age = age;
-            student.Course = course;
+            student.Course = course;*/
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //fileHandler.SaveAllStudents(students);
             return true;
@@ -38,12 +38,12 @@ namespace BC_Student_Management_System_Project
         //Ken -> implement
         public static bool DeleteStudent(string studentId)
         {
-            var student = students.FirstOrDefault(s => s.StudentID == studentId);
+            /*var student = students.FirstOrDefault(s => s.StudentID == studentId);
             if (student == null) return false;
 
             students.Remove(student);
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //fileHandler.SaveAllStudents(students);
+            //fileHandler.SaveAllStudents(students);*/
             return true;
         }
 

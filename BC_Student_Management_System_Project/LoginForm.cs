@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace BC_Student_Management_System_Project
 {
     public partial class LoginForm : Form
@@ -103,6 +105,46 @@ namespace BC_Student_Management_System_Project
         {
             txtUsername.Clear();
             txtPassword.Clear();
+        }
+
+        public void txtEnter(string text, System.Windows.Forms.TextBox textBox)
+        {
+            if (textBox.Text == text)
+            {
+                textBox.Text = "";
+
+                textBox.ForeColor = Color.Black;
+            }
+        }
+
+        public void txtLeave(string text, System.Windows.Forms.TextBox textBox)
+        {
+            if (textBox.Text == "")
+            {
+                textBox.Text = text;
+
+                textBox.ForeColor = Color.Gray;
+            }
+        }
+
+        private void txtUsername_Enter(object sender, EventArgs e)
+        {
+            txtEnter("Username", txtUsername);
+        }
+
+        private void txtUsername_Leave(object sender, EventArgs e)
+        {
+            txtLeave("Username", txtUsername);
+        }
+
+        private void txtPassword_Enter(object sender, EventArgs e)
+        {
+            txtEnter("Password", txtPassword);
+        }
+
+        private void txtPassword_Leave(object sender, EventArgs e)
+        {
+            txtLeave("Password", txtPassword);
         }
     }
 }
