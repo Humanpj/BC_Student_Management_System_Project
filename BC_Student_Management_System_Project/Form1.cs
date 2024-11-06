@@ -59,6 +59,7 @@ namespace BC_Student_Management_System_Project
 
             // Append new student data to students.txt file
             studentFile.Write(newStudent.ToString());
+            btnViewAllStudents_Click(sender, e);
             /*using (StreamWriter writer = new StreamWriter(filePath, true))
             {
                 writer.WriteLine($"{studentId},{name},{age},{course}");
@@ -82,81 +83,118 @@ namespace BC_Student_Management_System_Project
             //LoadAllStudents();
         }
         //====================================================================================================================================
-        //REPLACED WITH Transactions.LinesToStudents(FileHandler.ReadAllLines);
-
-        // Reads all student records from students.txt and populates the student list
-        /*private void LoadAllStudents()
+        
+        public (string, string) checkUpdates(System.Windows.Forms.TextBox textBox, string text, string studentProperty)
         {
-            students.Clear(); // Clear the current list before loading
+            string edit = string.Empty;
+            string change;
 
-            // Check if file exists and read each line to populate students list
-            if (File.Exists(filePath))
+            if (!string.IsNullOrWhiteSpace(textBox.Text) && (textBox.Text != text))
             {
-                using (StreamReader reader = new StreamReader(filePath))
+                if (text == "Age" && !(int.TryParse(textBox.Text, out int yes)))
                 {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
+                    change = studentProperty;
+                    return ($"{studentProperty} --> (No Change, Invalid Number)\n", change);
+                }
+
+                if (text == "StudentId")
+                {
+                    if (studentFile.SearchID(txtStudentID.Text))
                     {
-                        var data = line.Split(',');
-                        if (data.Length == 4 && int.TryParse(data[2], out int age))
-                        {
-                            students.Add(new Student
-                            {
-                                StudentID = data[0],
-                                Name = data[1],
-                                Age = age,
-                                Course = data[3]
-                            });
-                        }
+                        change = studentProperty;
+                        return ($"{studentProperty} --> (No Change, Duplicate ID)\n", change);
                     }
                 }
+
+                edit += $"{studentProperty} --> {textBox.Text}\n";
+                change = textBox.Text;
+            }
+            else
+            {
+                edit += $"{studentProperty} --> (No Change)\n";
+                change = studentProperty;
             }
 
-            // Bind the list to DataGridView for display
-            studentBindingSource.DataSource = students;
-            dgvStudents.DataSource = studentBindingSource;
-        }*/
+            return (edit, change);
+        }
         //====================================================================================================================================
         private void btnUpdateStudent_Click(object sender, EventArgs e)
         {
             int rowIndex = dgvStudents.CurrentCell.RowIndex;
 
-            if (!string.IsNullOrWhiteSpace(txtStudentID.Text))
+            string edit = string.Empty;
+            string StudentID = string.Empty;
+            string Name = string.Empty;
+            int Age;
+            string Course = string.Empty;
+
+            var updates = checkUpdates(txtStudentID, "StudentId", students[rowIndex].StudentID);
+            edit += updates.Item1;
+            StudentID = updates.Item2;
+
+            updates = checkUpdates(txtName, "Name", students[rowIndex].Name);
+            edit += updates.Item1;
+            Name = updates.Item2;
+
+            updates = checkUpdates(txtAge, "Age", students[rowIndex].Age.ToString());
+            edit += updates.Item1;
+            Age = int.Parse(updates.Item2);
+
+            updates = checkUpdates(txtCourse, "Course", students[rowIndex].Course);
+            edit += updates.Item1;
+            Course = updates.Item2;
+
+            var result = MessageBox.Show($"Are you sure you want to CHANGE:\n\n{edit}", "Are you sure?", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
             {
-                students[rowIndex].StudentID = txtStudentID.Text;
-            }
+                students[rowIndex].StudentID = StudentID;
+                students[rowIndex].Name = Name;
+                students[rowIndex].Age = Age;
+                students[rowIndex].Course = Course;
 
-            if (!string.IsNullOrWhiteSpace(txtName.Text))
+                studentFile.ReWrite(students);
+
+                btnViewAllStudents_Click(sender, e);
+
+                MessageBox.Show("Successfully updated Student Information!", "Success");
+
+                ClearFields();
+            }
+            else if (result == DialogResult.No)
             {
-                students[rowIndex].Name = txtName.Text;
+                MessageBox.Show("Canceled", "Canceled");
             }
-
-            if (!string.IsNullOrWhiteSpace(txtAge.Text) && int.TryParse(txtAge.Text, out int age))
-            {
-                students[rowIndex].Age = age;
-            }
-
-            if (!string.IsNullOrWhiteSpace(txtCourse.Text))
-            {
-                students[rowIndex].Course = txtCourse.Text;
-            }
-
-            studentFile.ReWrite(students);
-
-            btnViewAllStudents_Click(sender, e);
+            
         }
         //====================================================================================================================================
         private void btnDeleteStudent_Click(object sender, EventArgs e)
         {
             int rowIndex = dgvStudents.CurrentCell.RowIndex;
 
-            students.Remove(students[rowIndex]);
+            string deleted = $"ID: {students[rowIndex].StudentID}\n" +
+                             $"Name: {students[rowIndex].Name}\n" +
+                             $"Age: {students[rowIndex].Age}\n" +
+                             $"Course: {students[rowIndex].Course}";
 
-            studentFile.ReWrite(students);
+            var result = MessageBox.Show($"Are you sure you want to DELETE:\n\n{deleted}", "Are you sure?", MessageBoxButtons.YesNo);
 
-            btnViewAllStudents_Click(sender, e);
+            if (result == DialogResult.Yes)
+            {
+                students.Remove(students[rowIndex]);
+                studentFile.ReWrite(students);
+                btnViewAllStudents_Click(sender, e);
+
+                MessageBox.Show("Successfully DELETED Student Information!", "Success");
+
+                ClearFields();
+            }
+            else if (result == DialogResult.No)
+            {
+                MessageBox.Show("Canceled", "Canceled");
+            }
+
         }
-        //====================================================================================================================================
         //====================================================================================================================================
         private void btnGenerateSummary_Click(object sender, EventArgs e)
         {
@@ -182,9 +220,13 @@ namespace BC_Student_Management_System_Project
         private void ClearFields()
         {
             txtStudentID.Clear();
+            txtLeave("StudentId", txtStudentID);
             txtName.Clear();
+            txtLeave("Name", txtName);
             txtAge.Clear();
+            txtLeave("Age", txtAge);
             txtCourse.Clear();
+            txtLeave("Course", txtCourse);
         }
         //====================================================================================================================================
         // Method to validate that all required fields are filled
