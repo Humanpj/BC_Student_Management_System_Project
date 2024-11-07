@@ -16,7 +16,6 @@ namespace BC_Student_Management_System_Project
     {
         private BindingSource studentBindingSource = new BindingSource(); // Binding source for DataGridView
         private List<Student> students = new List<Student>();  // List to hold student records
-        private Transactions transactions;
         private FileHandler studentFile;
         private FileHandler summaryFile;
 
@@ -24,15 +23,14 @@ namespace BC_Student_Management_System_Project
         {
             InitializeComponent();
 
-            //   LoadAllStudents();    //load all students from file at startup
-
-            transactions = new Transactions();
             studentFile = new FileHandler("students.txt");
+            summaryFile = new FileHandler("summary.txt");
             studentBindingSource = new BindingSource();
-            //LoadAllStudents();
 
-            studentFile.CheckOrCreateFile(); // Ensure the file exists at startup
-            students = Transactions.LinesToStudents(studentFile.ReadAllLines());
+            studentFile.CheckOrCreateFile(); // Ensure students file exists at startup
+            summaryFile.CheckOrCreateFile(); //Ensure summary file exists at startup
+
+            students = Transactions.LinesToStudents(studentFile.ReadAllLines()); //load all students from textFile
         }
         //====================================================================================================================================
         //add a new student to the list and saves to textfile with name students.txt
@@ -198,22 +196,41 @@ namespace BC_Student_Management_System_Project
         //====================================================================================================================================
         private void btnGenerateSummary_Click(object sender, EventArgs e)
         {
-            int totalStudents, totalAge = 0;
-            double avgAge = 0;
-
             students = Transactions.LinesToStudents(studentFile.ReadAllLines());
-
-            totalStudents = students.Count;
-
-            foreach (Student student in students)
+            
+            if(students.Count == 0)
             {
-                totalAge += student.Age;
+                MessageBox.Show("No student data available");
+                summaryFile.ReWrite(new List<string>());
             }
+            else
+            {
+                int totalStudents, totalAge = 0;
+                double avgAge = 0;
 
-            avgAge = totalAge / totalStudents;
+                totalStudents = students.Count;
 
-            lblTotalStudents.Text = "Total Students: " + totalStudents.ToString();
-            lblAverageAge.Text = "Average Age: " + avgAge.ToString();
+                foreach (Student student in students)
+                {
+                    totalAge += student.Age;
+                }
+
+                avgAge = totalAge / totalStudents;
+
+                List<string> lines = new List<string>()
+                {
+                    "Total Students:" + totalStudents.ToString(),
+                    "Average Age:" + avgAge.ToString()
+                };
+
+                summaryFile.ReWrite(lines);
+
+                lblTotalStudents.Text = lines[0];
+                lblAverageAge.Text = lines[1] ;
+
+                
+            }
+            
         }
         //====================================================================================================================================
         // Clears input fields on the form for easier data entry

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Diagnostics.Eventing.Reader;
 
 namespace BC_Student_Management_System_Project
 {
@@ -21,7 +22,6 @@ namespace BC_Student_Management_System_Project
         {
             InitializeComponent();
         }
-
        
 
         private bool IsUsernameDuplicate(string username)
