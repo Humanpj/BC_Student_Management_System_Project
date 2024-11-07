@@ -350,6 +350,17 @@ namespace BC_Student_Management_System_Project
         {
             txtLeave("Course", txtCourse);
         }
+
+        private void btnMembers_Click(object sender, EventArgs e)
+        {
+            // Format the student information as a single string
+            string studentInfo = "Petrus Human - ID: 577842\n" +
+                                 "Mark Brown - ID: 600190\n" +
+                                 "Ken Aspeling - ID: 600551";
+
+            // Display the student data in a MessageBox
+            MessageBox.Show(studentInfo, "Student Members Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }
     

@@ -42,6 +42,7 @@
             this.lblTotalStudents = new System.Windows.Forms.Label();
             this.lblAverageAge = new System.Windows.Forms.Label();
             this.lblTitel = new System.Windows.Forms.Label();
+            this.btnMembers = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStudents)).BeginInit();
             this.SuspendLayout();
             // 
@@ -196,12 +197,24 @@
             this.lblTitel.TabIndex = 13;
             this.lblTitel.Text = "Student Management System";
             // 
+            // btnMembers
+            // 
+            this.btnMembers.BackColor = System.Drawing.Color.Red;
+            this.btnMembers.Location = new System.Drawing.Point(626, 21);
+            this.btnMembers.Name = "btnMembers";
+            this.btnMembers.Size = new System.Drawing.Size(75, 23);
+            this.btnMembers.TabIndex = 14;
+            this.btnMembers.Text = "Members";
+            this.btnMembers.UseVisualStyleBackColor = false;
+            this.btnMembers.Click += new System.EventHandler(this.btnMembers_Click);
+            // 
             // frmStudentManagementSystem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(703, 332);
+            this.Controls.Add(this.btnMembers);
             this.Controls.Add(this.lblTitel);
             this.Controls.Add(this.lblAverageAge);
             this.Controls.Add(this.lblTotalStudents);
@@ -241,6 +254,7 @@
         private System.Windows.Forms.Label lblTotalStudents;
         private System.Windows.Forms.Label lblAverageAge;
         private System.Windows.Forms.Label lblTitel;
+        private System.Windows.Forms.Button btnMembers;
     }
 }
 
