@@ -57,7 +57,7 @@ namespace BC_Student_Management_System_Project
 
             // Append new student data to students.txt file
             studentFile.Write(newStudent.ToString());
-            btnViewAllStudents_Click(sender, e);
+           // btnViewAllStudents_Click(sender, e);
             /*using (StreamWriter writer = new StreamWriter(filePath, true))
             {
                 writer.WriteLine($"{studentId},{name},{age},{course}");
@@ -222,11 +222,13 @@ namespace BC_Student_Management_System_Project
                     "Total Students:" + totalStudents.ToString(),
                     "Average Age:" + avgAge.ToString()
                 };
-
+                // Update label text properties with formatted values
+                lblTotalStudents.Text = totalStudents.ToString();
+                lblAverageAge.Text = avgAge.ToString("F2");
                 summaryFile.ReWrite(lines);
 
-                lblTotalStudents.Text = lines[0];
-                lblAverageAge.Text = lines[1] ;
+                //lblTotalStudents.Text = lines[0];
+                //lblAverageAge.Text = lines[1] ;
 
                 
             }
@@ -377,6 +379,11 @@ namespace BC_Student_Management_System_Project
 
             // Display the student data in a MessageBox
             MessageBox.Show(studentInfo, "Student Members Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void txtAge_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
