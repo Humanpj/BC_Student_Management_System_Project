@@ -91,6 +91,7 @@ namespace BC_Student_Management_System_Project
                 return;
             }
 
+            //check if username already exists
             if (IsUsernameDuplicate(username))
             {
                 MessageBox.Show("Username is already taken. Please choose another one.");

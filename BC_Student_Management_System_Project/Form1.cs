@@ -30,7 +30,22 @@ namespace BC_Student_Management_System_Project
             studentFile.CheckOrCreateFile(); // Ensure students file exists at startup
             summaryFile.CheckOrCreateFile(); //Ensure summary file exists at startup
 
-            students = Transactions.LinesToStudents(studentFile.ReadAllLines()); //load all students from textFile
+            students = LinesToStudents(studentFile.ReadAllLines()); //load all students from textFile
+        }
+
+        //converts list of strings objects to list of student objects
+        //used to convert textFile content to student objects
+        private static List<Student> LinesToStudents(List<string> lines)
+        {
+            List<Student> students = new List<Student>();
+
+            foreach (string line in lines)
+            {
+                string[] details = line.Split(',');
+                students.Add(new Student(details[0], details[1], int.Parse(details[2]), details[3]));
+            }
+
+            return students;
         }
         //====================================================================================================================================
         //add a new student to the list and saves to textfile with name students.txt
@@ -57,44 +72,39 @@ namespace BC_Student_Management_System_Project
 
             // Append new student data to students.txt file
             studentFile.Write(newStudent.ToString());
-           // btnViewAllStudents_Click(sender, e);
-            /*using (StreamWriter writer = new StreamWriter(filePath, true))
-            {
-                writer.WriteLine($"{studentId},{name},{age},{course}");
-            }*/
 
-            //Transactions.AddStudent(newStudent);
             MessageBox.Show("Student added successfully!");
             ClearFields(); // Reset input fields after adding a student
             studentBindingSource.ResetBindings(false); // Refresh the BindingSource to update DataGridView
         }
         //====================================================================================================================================
+        
         // Loads all students from students.txt and displays in DataGridView
-
-        //Ken -> implement
         private void btnViewAllStudents_Click(object sender, EventArgs e)
         {
-            students = Transactions.LinesToStudents(studentFile.ReadAllLines());
+            students = LinesToStudents(studentFile.ReadAllLines());
 
             dgvStudents.DataSource = students;
-
-            //LoadAllStudents();
         }
         //====================================================================================================================================
         
+        //check if updated values are valid
         public (string, string) checkUpdates(System.Windows.Forms.TextBox textBox, string text, string studentProperty)
         {
             string edit = string.Empty;
             string change;
 
+            //check if value entered and not the same
             if (!string.IsNullOrWhiteSpace(textBox.Text) && (textBox.Text != text))
             {
+                //check if age is number
                 if (text == "Age" && !(int.TryParse(textBox.Text, out int yes)))
                 {
                     change = studentProperty;
                     return ($"{studentProperty} --> (No Change, Invalid Number)\n", change);
                 }
 
+                //check if StudentID already exists
                 if (text == "StudentId")
                 {
                     if (studentFile.SearchID(txtStudentID.Text))
@@ -118,6 +128,7 @@ namespace BC_Student_Management_System_Project
         //====================================================================================================================================
         private void btnUpdateStudent_Click(object sender, EventArgs e)
         {
+            //get selected record from DataGridView
             int rowIndex = dgvStudents.CurrentCell.RowIndex;
 
             string edit = string.Empty;
@@ -142,10 +153,13 @@ namespace BC_Student_Management_System_Project
             edit += updates.Item1;
             Course = updates.Item2;
 
+            //confirm message
             var result = MessageBox.Show($"Are you sure you want to CHANGE:\n\n{edit}", "Are you sure?", MessageBoxButtons.YesNo);
 
+            //check user response
             if (result == DialogResult.Yes)
             {
+                //confirmed
                 students[rowIndex].StudentID = StudentID;
                 students[rowIndex].Name = Name;
                 students[rowIndex].Age = Age;
@@ -153,6 +167,7 @@ namespace BC_Student_Management_System_Project
 
                 studentFile.ReWrite(students);
 
+                //update student info on DataGridView
                 btnViewAllStudents_Click(sender, e);
 
                 MessageBox.Show("Successfully updated Student Information!", "Success");
@@ -161,6 +176,7 @@ namespace BC_Student_Management_System_Project
             }
             else if (result == DialogResult.No)
             {
+                //canceled
                 MessageBox.Show("Canceled", "Canceled");
             }
             
@@ -168,6 +184,7 @@ namespace BC_Student_Management_System_Project
         //====================================================================================================================================
         private void btnDeleteStudent_Click(object sender, EventArgs e)
         {
+            //get record from DataGridView
             int rowIndex = dgvStudents.CurrentCell.RowIndex;
 
             string deleted = $"ID: {students[rowIndex].StudentID}\n" +
@@ -175,10 +192,12 @@ namespace BC_Student_Management_System_Project
                              $"Age: {students[rowIndex].Age}\n" +
                              $"Course: {students[rowIndex].Course}";
 
+            //confirm message
             var result = MessageBox.Show($"Are you sure you want to DELETE:\n\n{deleted}", "Are you sure?", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
+                //confirmed
                 students.Remove(students[rowIndex]);
                 studentFile.ReWrite(students);
                 btnViewAllStudents_Click(sender, e);
@@ -189,6 +208,7 @@ namespace BC_Student_Management_System_Project
             }
             else if (result == DialogResult.No)
             {
+                //canceled
                 MessageBox.Show("Canceled", "Canceled");
             }
 
@@ -196,20 +216,25 @@ namespace BC_Student_Management_System_Project
         //====================================================================================================================================
         private void btnGenerateSummary_Click(object sender, EventArgs e)
         {
-            students = Transactions.LinesToStudents(studentFile.ReadAllLines());
+            //get students from textFile
+            students = LinesToStudents(studentFile.ReadAllLines());
             
+            //check if students exists
             if(students.Count == 0)
             {
+                //no students to display summary
                 MessageBox.Show("No student data available");
                 summaryFile.ReWrite(new List<string>());
             }
             else
             {
+                //student records exist
                 int totalStudents, totalAge = 0;
                 double avgAge = 0;
 
                 totalStudents = students.Count;
 
+                //go through all records
                 foreach (Student student in students)
                 {
                     totalAge += student.Age;
@@ -217,19 +242,18 @@ namespace BC_Student_Management_System_Project
 
                 avgAge = totalAge / totalStudents;
 
+                //ReWrite method uses list as parameter
                 List<string> lines = new List<string>()
                 {
                     "Total Students:" + totalStudents.ToString(),
                     "Average Age:" + avgAge.ToString()
                 };
-                // Update label text properties with formatted values
-                lblTotalStudents.Text = totalStudents.ToString();
-                lblAverageAge.Text = avgAge.ToString("F2");
+
+                //write summary to textFile
                 summaryFile.ReWrite(lines);
-
-                //lblTotalStudents.Text = lines[0];
-                //lblAverageAge.Text = lines[1] ;
-
+                // Update label text properties with values
+                lblTotalStudents.Text = lines[0];
+                lblAverageAge.Text = lines[1] ;
                 
             }
             
@@ -379,11 +403,6 @@ namespace BC_Student_Management_System_Project
 
             // Display the student data in a MessageBox
             MessageBox.Show(studentInfo, "Student Members Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void txtAge_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

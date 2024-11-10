@@ -164,7 +164,6 @@
             this.txtAge.Size = new System.Drawing.Size(157, 26);
             this.txtAge.TabIndex = 9;
             this.txtAge.Text = "Age";
-            this.txtAge.TextChanged += new System.EventHandler(this.txtAge_TextChanged);
             this.txtAge.Enter += new System.EventHandler(this.txtAge_Enter);
             this.txtAge.Leave += new System.EventHandler(this.txtAge_Leave);
             // 

@@ -27,7 +27,8 @@ namespace BC_Student_Management_System_Project
         }
 
         //used to write all students to textFile
-        //replaces existing file
+        //overwrites existing file
+        //takes list of student objects
         public void ReWrite(List<Student> students)
         {
             FileStream fs = new FileStream(Path, FileMode.Create);
@@ -42,6 +43,9 @@ namespace BC_Student_Management_System_Project
             fs.Close();
         }
 
+        //used to write all students to textFile
+        //overwrites existing file
+        //takes list of string objects
         public void ReWrite(List<string> lines)
         {
             FileStream fs = new FileStream(Path, FileMode.Create);
